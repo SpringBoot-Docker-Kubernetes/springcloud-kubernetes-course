@@ -1,5 +1,7 @@
 package com.lagm.springcloud.msvc.courses.models.entity;
 
+import com.lagm.springcloud.msvc.courses.models.User;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
@@ -16,10 +18,15 @@ public class Course {
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CourseUser> listCourseUser;
+    @JoinColumn(name = "course_id")
+    private List<CourseUser> listCourseUsers;
+
+    @Transient
+    private List<User> listUsers;
 
     public Course() {
-        this.listCourseUser = new ArrayList<>();
+        this.listCourseUsers = new ArrayList<>();
+        this.listUsers = new ArrayList<>();
     }
 
     public long getId() {
@@ -38,19 +45,35 @@ public class Course {
         this.name = name;
     }
 
-    public List<CourseUser> getCourseUser() {
-        return listCourseUser;
+    public List<CourseUser> getListCourseUsers() {
+        return listCourseUsers;
     }
 
-    public void setCourseUser(List<CourseUser> courseUser) {
-        this.listCourseUser = courseUser;
+    public void setListCourseUsers(List<CourseUser> listCourseUsers) {
+        this.listCourseUsers = listCourseUsers;
     }
 
     public void addCourseUser(CourseUser courseUser) {
-        this.listCourseUser.add(courseUser);
+        this.listCourseUsers.add(courseUser);
     }
 
     public void removeCourseUser(CourseUser courseUser) {
-        this.listCourseUser.remove(courseUser);
+        this.listCourseUsers.remove(courseUser);
+    }
+
+    public List<CourseUser> getListCourseUser() {
+        return listCourseUsers;
+    }
+
+    public void setListCourseUser(List<CourseUser> listCourseUser) {
+        this.listCourseUsers = listCourseUser;
+    }
+
+    public List<User> getListUsers() {
+        return listUsers;
+    }
+
+    public void setListUsers(List<User> listUsers) {
+        this.listUsers = listUsers;
     }
 }
