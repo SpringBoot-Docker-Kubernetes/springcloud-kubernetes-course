@@ -1,6 +1,7 @@
 package com.lagm.springcloud.msvc.courses.models.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "courses")
@@ -8,6 +9,8 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @NotEmpty
     private String name;
 
     public long getId() {

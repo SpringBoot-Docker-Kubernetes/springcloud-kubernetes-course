@@ -1,6 +1,9 @@
 package com.lagm.springcloud.msvc.users.models.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
@@ -11,11 +14,15 @@ public class User {
     private Long id;
 
     @Column(name = "name")
+    @NotEmpty
     private String name;
 
     @Column(name = "email", unique = true)
+    @NotEmpty
+    @Email
     private String email;
 
+    @NotEmpty
     private String password;
 
     @Column(name = "create_at")

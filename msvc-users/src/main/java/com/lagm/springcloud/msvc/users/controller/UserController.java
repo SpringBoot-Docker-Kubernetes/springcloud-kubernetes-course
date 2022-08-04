@@ -5,9 +5,13 @@ import com.lagm.springcloud.msvc.users.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -32,13 +36,20 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody User user) {
+    public ResponseEntity<?> save(@Valid @RequestBody User user, BindingResult result) {
+        if (result.hasErrors()) {
+            return validateInput(result);
+        }
         User userSaved = userService.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(userSaved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody User user, @PathVariable("id") Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody User user, BindingResult result, @PathVariable("id") Long id) {
+        if (result.hasErrors()) {
+            return validateInput(result);
+        }
+
         Optional<User>optUserDB = userService.findById(id);
         if (optUserDB.isPresent()) {
             User userDB = optUserDB.get();
@@ -61,5 +72,14 @@ public class UserController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    private static ResponseEntity<Map<String, String>> validateInput(BindingResult result) {
+        Map<String, String> errors = new HashMap<>();
+        result.getFieldErrors().forEach(error -> {
+            errors.put(error.getField(), "El campo " + error.getField() + " " + error.getDefaultMessage());
+        });
+
+        return ResponseEntity.badRequest().body(errors);
     }
 }
