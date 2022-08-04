@@ -38,8 +38,8 @@ public class UserController {
             return validateInput(result);
         }
 
-        Optional<User> userOpt = userService.findByEmail(user.getEmail());
-        if (userOpt.isPresent()) {
+        // if (!user.getEmail().isEmpty() && userService.findByEmail(user.getEmail()).isPresent()) {
+        if (!user.getEmail().isEmpty() && userService.existsByEmail(user.getEmail())) {
             return ResponseEntity.badRequest()
                     .body(Collections.singletonMap("message", "The user with email " + user.getEmail() + " already exists"));
         }
@@ -59,8 +59,9 @@ public class UserController {
             User userDB = optUser.get();
             String currentEmail = userDB.getEmail();
             String newEmail = user.getEmail();
-
-            if (userService.findByEmail(newEmail).isPresent() && !newEmail.equalsIgnoreCase(currentEmail)) {
+            if (!user.getEmail().isEmpty() &&
+                !newEmail.equalsIgnoreCase(currentEmail) &&
+                userService.findByEmail(newEmail).isPresent()) {
                 return ResponseEntity.badRequest().body(Collections.singletonMap("message", "The user with email " + user.getEmail() + " already exists"));
             }
 
