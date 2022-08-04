@@ -9,10 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -40,6 +37,13 @@ public class UserController {
         if (result.hasErrors()) {
             return validateInput(result);
         }
+
+        Optional<User> userOpt = userService.findByEmail(user.getEmail());
+        if (userOpt.isPresent()) {
+            return ResponseEntity.badRequest()
+                    .body(Collections.singletonMap("message", "The user with email " + user.getEmail() + " already exists"));
+        }
+
         User userSaved = userService.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(userSaved);
     }
@@ -50,9 +54,16 @@ public class UserController {
             return validateInput(result);
         }
 
-        Optional<User>optUserDB = userService.findById(id);
-        if (optUserDB.isPresent()) {
-            User userDB = optUserDB.get();
+        Optional<User> optUser = userService.findById(id);
+        if (optUser.isPresent()) {
+            User userDB = optUser.get();
+            String currentEmail = userDB.getEmail();
+            String newEmail = user.getEmail();
+
+            if (userService.findByEmail(newEmail).isPresent() && !newEmail.equalsIgnoreCase(currentEmail)) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "The user with email " + user.getEmail() + " already exists"));
+            }
+
             userDB.setName(user.getName());
             userDB.setEmail(user.getEmail());
             userDB.setPassword(user.getPassword());
