@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "msvc-users", url = "localhost:8001")
+@FeignClient(name = "msvc-users", url = "localhost:8001/api/v1/user")
 public interface UserClientRest {
     @GetMapping("/{id}")
     User findById(@PathVariable Long id);
