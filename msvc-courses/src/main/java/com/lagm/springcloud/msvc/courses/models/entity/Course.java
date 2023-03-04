@@ -29,6 +29,14 @@ public class Course {
         this.listUsers = new ArrayList<>();
     }
 
+    public void addCourseUser(CourseUser courseUser) {
+        this.listCourseUsers.add(courseUser);
+    }
+
+    public void removeCourseUser(CourseUser courseUser) {
+        this.listCourseUsers.remove(courseUser);
+    }
+
     public long getId() {
         return id;
     }
@@ -51,22 +59,6 @@ public class Course {
 
     public void setListCourseUsers(List<CourseUser> listCourseUsers) {
         this.listCourseUsers = listCourseUsers;
-    }
-
-    public void addCourseUser(CourseUser courseUser) {
-        this.listCourseUsers.add(courseUser);
-    }
-
-    public void removeCourseUser(CourseUser courseUser) {
-        this.listCourseUsers.remove(courseUser);
-    }
-
-    public List<CourseUser> getListCourseUser() {
-        return listCourseUsers;
-    }
-
-    public void setListCourseUser(List<CourseUser> listCourseUser) {
-        this.listCourseUsers = listCourseUser;
     }
 
     public List<User> getListUsers() {
