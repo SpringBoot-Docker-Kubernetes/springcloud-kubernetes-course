@@ -1,7 +1,9 @@
 package com.lagm.springcloud.msvc.courses.controller;
 
+import com.lagm.springcloud.msvc.courses.models.User;
 import com.lagm.springcloud.msvc.courses.models.entity.Course;
 import com.lagm.springcloud.msvc.courses.service.ICourseService;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/api/v1/course")
@@ -80,5 +79,71 @@ public class CourseController {
         });
 
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @PutMapping("/assign-user/{courseId}")
+    public ResponseEntity<?> assignUserToCourse(@RequestBody User user, @PathVariable("courseId") Long courseId) {
+        Optional<User> optionalUser;
+
+        try {
+            optionalUser = courseService.assignUserToCourse(user, courseId);
+
+            if (optionalUser.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(optionalUser.get());
+            }
+
+            return ResponseEntity.notFound().build();
+
+        } catch (FeignException e) {
+            return ResponseEntity.status(e.status()).body(
+                    Collections.singletonMap("mensaje", "No existe el usuario por id o error en la comunicacion: " + e.getMessage()));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("mensaje", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/create-assign-user/{courseId}")
+    public ResponseEntity<?> createAndAssignUserToCourse(@RequestBody User user, @PathVariable("courseId") Long courseId) {
+        Optional<User> optionalUser;
+
+        try {
+            optionalUser = courseService.createAndAssignUserToCourse(user, courseId);
+
+            if (optionalUser.isPresent()) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(optionalUser.get());
+            }
+
+            return ResponseEntity.notFound().build();
+
+        } catch (FeignException e) {
+            return ResponseEntity.status(e.status()).body(
+                    Collections.singletonMap("mensaje", "Error al crear el usuario o error en la comunicación: " + e.getMessage()));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("mensaje", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/unassign-user/{courseId}")
+    public ResponseEntity<?> unassignUserFromCourse(@RequestBody User user, @PathVariable("courseId") Long courseId) {
+        Optional<User> optionalUser;
+
+        try {
+            optionalUser = courseService.unassignUserFromCourse(user, courseId);
+
+            if (optionalUser.isPresent()) {
+                return ResponseEntity.status(HttpStatus.OK).body(optionalUser.get());
+            }
+
+            return ResponseEntity.notFound().build();
+
+        } catch (FeignException e) {
+            return ResponseEntity.status(e.status()).body(
+                    Collections.singletonMap("mensaje", "No existe el usuario por el id o error en la comunicación: " + e.getMessage()));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("mensaje", e.getMessage()));
+        }
     }
 }
